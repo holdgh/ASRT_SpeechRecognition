@@ -29,7 +29,7 @@ import numpy as np
 
 from utils.ops import get_edit_distance, read_wav_data
 from utils.config import load_config_file, DEFAULT_CONFIG_FILENAME, load_pinyin_dict
-from utils.thread import threadsafe_generator
+from utils.thread_backup import threadsafe_generator
 
 
 class ModelSpeech:
@@ -104,7 +104,7 @@ class ModelSpeech:
 
         self.trained_model.compile(loss=self.speech_model.get_loss_function(), optimizer=optimizer)
         print('[ASRT] Compiles Model Successfully.')
-
+        # 对于输入数据进行分批特征提取
         yielddatas = self._data_generator(batch_size, data_loader)
 
         data_count = data_loader.get_data_count()  # 获取数据的数量
@@ -233,13 +233,16 @@ class ModelSpeech:
         """
         # 获取输入特征
         data_input = self.speech_features.run(wavsignal, fs)
+        # 将输入特征转化为浮点数类型
         data_input = np.array(data_input, dtype=np.float64)
         # print(data_input,data_input.shape)
+        # 将输入特征重塑【行列不变，增加第三维度，值为1】
         data_input = data_input.reshape(data_input.shape[0], data_input.shape[1], 1)
+        # 根据输入特征预测拼音结果索引集合
         r1 = self.predict(data_input)
-        # 获取拼音列表
+        # 获取拼音字典，形如当前目录的dict.json文件【注意：为了便于保存json文件，单引号调整为了双引号】
         list_symbol_dic, _ = load_pinyin_dict(load_config_file(DEFAULT_CONFIG_FILENAME)['dict_filename'])
-
+        # 遍历预测拼音结果索引集合，获取最终文字结果列表
         r_str = []
         for i in r1:
             r_str.append(list_symbol_dic[i])
@@ -250,7 +253,9 @@ class ModelSpeech:
         """
         最终做语音识别用的函数，识别指定文件名的语音
         """
+        # 读取wav语音文件
         wavsignal, sample_rate, _, _ = read_wav_data(filename)
+        # 识别语音
         r = self.recognize_speech(wavsignal, sample_rate)
         return r
 

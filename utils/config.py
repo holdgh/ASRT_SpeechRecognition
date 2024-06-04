@@ -25,7 +25,8 @@
 
 import json
 
-DEFAULT_CONFIG_FILENAME = 'asrt_config.json'
+# DEFAULT_CONFIG_FILENAME = 'asrt_config.json'
+DEFAULT_CONFIG_FILENAME = 'D:\project\AI\ASRT_SpeechRecognition\\asrt_config.json'
 _config_dict = None
 _pinyin_dict = None
 _pinyin_list = None
@@ -72,3 +73,7 @@ def load_pinyin_dict(filename: str) -> tuple:
         _pinyin_list.append(tokens[0])
         _pinyin_dict[tokens[0]] = len(_pinyin_list) - 1
     return _pinyin_list, _pinyin_dict
+
+
+if __name__ == '__main__':
+    list_symbol_dic, _ = load_pinyin_dict(load_config_file(DEFAULT_CONFIG_FILENAME)['dict_filename'])

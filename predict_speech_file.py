@@ -37,19 +37,22 @@ AUDIO_FEATURE_LENGTH = 200
 CHANNELS = 1
 # 默认输出的拼音的表示大小是1428，即1427个拼音+1个空白块
 OUTPUT_SIZE = 1428
+# 定义语音模型
 sm251bn = SpeechModel251BN(
     input_shape=(AUDIO_LENGTH, AUDIO_FEATURE_LENGTH, CHANNELS),
     output_size=OUTPUT_SIZE
 )
 feat = Spectrogram()
 ms = ModelSpeech(sm251bn, feat, max_label_length=64)
-
+# 加载训练好的模型
 ms.load_model('save_models/' + sm251bn.get_model_name() + '.model.h5')
+# 获取识别结果
 res = ms.recognize_speech_from_file('filename.wav')
 print('*[提示] 声学模型语音识别结果：\n', res)
 
 ml = ModelLanguage('model_language')
 ml.load_model()
 str_pinyin = res
+# 将拼音转换为文本？同样的读音，对应多个字，如何确定对应哪个字呢？
 res = ml.pinyin_to_text(str_pinyin)
 print('语音识别最终结果：\n', res)

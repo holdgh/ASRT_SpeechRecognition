@@ -24,10 +24,12 @@
 """
 
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
-from tensorflow.keras.layers import Lambda, Activation, Conv2D, MaxPooling2D
-from tensorflow.keras import backend as K
+from tensorflow.python.keras.models import Model
+# from tensorflow.keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
+from tensorflow.python.keras.layers import Dense, Dropout, Input, Reshape
+from keras.layers.normalization.batch_normalization import BatchNormalization
+from tensorflow.python.keras.layers import Lambda, Activation, Conv2D, MaxPooling2D
+from tensorflow.python.keras import backend as K
 import numpy as np
 from utils.ops import ctc_decode_delete_tail_blank
 
@@ -106,7 +108,7 @@ class SpeechModel251BN(BaseModel):
 
     def _define_model(self, input_shape, output_size) -> tuple:
         label_max_string_length = 64
-
+        # 输入数据层
         input_data = Input(name='the_input', shape=input_shape)
 
         layer_h = Conv2D(32, (3, 3), use_bias=True, padding='same', kernel_initializer='he_normal', name='Conv0')(input_data)  # 卷积层
@@ -169,16 +171,20 @@ class SpeechModel251BN(BaseModel):
         layer_h = Dense(output_size, use_bias=True, kernel_initializer='he_normal', name='Dense1')(layer_h) # 全连接层
         y_pred = Activation('softmax', name='Activation0')(layer_h)
 
+        # 将输入数据与输出之间的关系，利用tensorflow库的Model生成基础模型
         model_base = Model(inputs = input_data, outputs = y_pred)
         # model_data.summary()
-
+        # 获取输入数据中的标签列
         labels = Input(name='the_labels', shape=[label_max_string_length], dtype='float32')
+        # 获取输入特征长度？
         input_length = Input(name='input_length', shape=[1], dtype='int64')
+        # 获取标签长度
         label_length = Input(name='label_length', shape=[1], dtype='int64')
         # Keras doesn't currently support loss funcs with extra parameters
         # so CTC loss is implemented in a lambda layer
+        # 利用lambda构建输出与标签之间的误差
         loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
-
+        # 将输入数据、标签与误差之间的关系，利用tensorflow库的Model生成训练模型
         model = Model(inputs=[input_data, labels, input_length, label_length], outputs=loss_out)
 
         return model, model_base
@@ -186,6 +192,7 @@ class SpeechModel251BN(BaseModel):
     def get_loss_function(self) -> dict:
         return {'ctc': lambda y_true, y_pred: y_pred}
 
+    # 利用模型预测输入数据
     def forward(self, data_input):
         batch_size = 1 
         in_len = np.zeros((batch_size,), dtype=np.int32)
