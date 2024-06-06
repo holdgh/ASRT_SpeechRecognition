@@ -169,16 +169,19 @@ class ModelSpeech:
         """
         评估检验模型的识别效果
         """
+        # 获取音频文件数量
         data_nums = data_loader.get_data_count()
 
         if data_count <= 0 or data_count > data_nums:  # 当data_count为小于等于0或者大于测试数据量的值时，则使用全部数据来测试
             data_count = data_nums
 
         try:
-            ran_num = random.randint(0, data_nums - 1)  # 获取一个随机数
+            ran_num = random.randint(0, data_nums - 1)  # 获取[0, 音频文件数量-1]一个随机数，也即随机获取一个索引
+            # 初始化总字数
             words_num = 0
+            # 初始化识别错误字数
             word_error_num = 0
-
+            # 格式化当前时间，2024年6月6日13:51:36形如20240606_135136
             nowtime = time.strftime('%Y%m%d_%H%M%S', time.localtime(time.time()))
             if out_report:
                 txt_obj = open('Test_Report_' + data_loader.dataset_type + '_' + nowtime + '.txt', 'w',
@@ -190,7 +193,9 @@ class ModelSpeech:
             i = 0
             while i < data_count:
                 wavdata, fs, data_labels = data_loader.get_data((ran_num + i) % data_nums)  # 从随机数开始连续向后取一定数量数据
+                # 提取特征
                 data_input = self.speech_features.run(wavdata, fs)
+                # 特征重塑
                 data_input = data_input.reshape(data_input.shape[0], data_input.shape[1], 1)
                 # 数据格式出错处理 开始
                 # 当输入的wav文件长度过长时自动跳过该文件，转而使用下一个wav文件来运行
@@ -202,20 +207,21 @@ class ModelSpeech:
                     i += 1
                     continue
                 # 数据格式出错处理 结束
-
+                # 预测数据，得到识别语音的拼音索引集合
                 pre = self.predict(data_input)
 
                 words_n = data_labels.shape[0]  # 获取每个句子的字数
                 words_num += words_n  # 把句子的总字数加上
+                # 编辑距离就是与误差相关的量【data_labels为当前音频文件的标签【拼音索引向量】】
                 edit_distance = get_edit_distance(data_labels, pre)  # 获取编辑距离
                 if edit_distance <= words_n:  # 当编辑距离小于等于句子字数时
                     word_error_num += edit_distance  # 使用编辑距离作为错误字数
                 else:  # 否则肯定是增加了一堆乱七八糟的奇奇怪怪的字
                     word_error_num += words_n  # 就直接加句子本来的总字数就好了
-
+                # 每隔show_per_step次打印测试结果
                 if i % show_per_step == 0 and show_ratio:
                     print('[ASRT Info] Testing: ', i, '/', data_count)
-
+                # 将标签拼音索引和预测结果打印到txt文件中
                 txt = ''
                 if out_report:
                     txt += str(i) + '\n'
@@ -223,12 +229,14 @@ class ModelSpeech:
                     txt += 'Pred:\t' + str(pre) + '\n'
                     txt += '\n'
                     txt_obj.write(txt)
-
+                # 预测下一个音频文件
                 i += 1
 
             # print('*[测试结果] 语音识别 ' + str_dataset + ' 集语音单字错误率：', word_error_num / words_num * 100, '%')
+            # 错误率计算公式：错误字数/总字数的百分数
             print('*[ASRT Test Result] Speech Recognition ' + data_loader.dataset_type + ' set word error ratio: ',
                   word_error_num / words_num * 100, '%')
+            # 输出错误率到txt文件
             if out_report:
                 txt = '*[ASRT Test Result] Speech Recognition ' + data_loader.dataset_type + ' set word error ratio: ' + str(
                     word_error_num / words_num * 100) + ' %'
@@ -260,9 +268,9 @@ class ModelSpeech:
         data_input = data_input.reshape(data_input.shape[0], data_input.shape[1], 1)
         # 根据输入特征预测拼音结果索引集合
         r1 = self.predict(data_input)
-        # 获取拼音字典，形如当前目录的dict.json文件【注意：为了便于保存json文件，单引号调整为了双引号】
+        # 获取拼音列表，形如当前目录的_pinyin_list.txt文件
         list_symbol_dic, _ = load_pinyin_dict(load_config_file(DEFAULT_CONFIG_FILENAME)['dict_filename'])
-        # 遍历预测拼音结果索引集合，获取最终文字结果列表
+        # 遍历预测拼音结果索引集合，获取最终拼音结果列表
         r_str = []
         for i in r1:
             r_str.append(list_symbol_dic[i])

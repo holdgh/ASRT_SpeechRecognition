@@ -42,9 +42,11 @@ sm251bn = SpeechModel251BN(
     output_size=OUTPUT_SIZE
 )
 feat = Spectrogram()
+# 加载评估数据
 evalue_data = DataLoader('dev')
 ms = ModelSpeech(sm251bn, feat, max_label_length=64)
-
+# 加载模型
 ms.load_model('save_models/' + sm251bn.get_model_name() + '.model.h5')
+# 评估模型
 ms.evaluate_model(data_loader=evalue_data, data_count=-1,
                   out_report=True, show_ratio=True, show_per_step=100)
