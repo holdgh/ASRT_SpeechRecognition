@@ -46,6 +46,7 @@ sm251bn = SpeechModel251BN(
 # 获取声学特征？
 feat = SpecAugment()
 # 加载训练数据
+# 依据配置文件，获取音频文件路径字典【标签编号/文件编号：音频文件路径】wav_dict、标签字典【标签编号/文件编号：拼音标签内容】label_dict、标签编号/文件编号列表data_list、拼音列表pinyin_list【见_pinyin_list.txt】和拼音索引字典pinyin_dict【见_pinyin_dict.json】
 train_data = DataLoader('train')
 # 定义优化器
 opt = Adam(learning_rate=0.0001, beta_1=0.9, beta_2=0.999, decay=0.0, epsilon=10e-8)
@@ -55,4 +56,5 @@ ms = ModelSpeech(sm251bn, feat, max_label_length=64)
 # ms.load_model('save_models/' + sm251bn.get_model_name() + '.model.h5')
 ms.train_model(optimizer=opt, data_loader=train_data,
                epochs=50, save_step=1, batch_size=16, last_epoch=0)
+# 保存模型文件：save_models/SpeechModel251bn
 ms.save_model('save_models/' + sm251bn.get_model_name())

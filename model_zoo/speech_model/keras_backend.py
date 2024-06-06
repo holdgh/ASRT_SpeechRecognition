@@ -102,6 +102,7 @@ class SpeechModel251BN(BaseModel):
         super().__init__()
         self.input_shape = input_shape
         self._pool_size = 8
+        # 输出特征维度：【采样频率/8， 1428】
         self.output_shape = (input_shape[0] // self._pool_size, output_size)
         self._model_name = 'SpeechModel251bn'
         self.model, self.model_base = self._define_model(self.input_shape, self.output_shape[1])
