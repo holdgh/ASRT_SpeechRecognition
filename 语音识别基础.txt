@@ -37,14 +37,14 @@ asrt核心逻辑：
 
 训练过程：
 训练数据加载过程：见data_loader.py文件_load_data方法代码注释
-特征提取和数据整形：见speech_features.py中类SpecAugment的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
+特征提取和数据整形：见speech_features.py中类Spectrogram的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
 分迭代【迭代内分批次】训练和保存模型：见speech_model.py文件train_model方法代码注释
 保存模型【提问：分迭代保存模型和训练后保存模型有什么联系？为啥要在两个地方出现保存模型？】
 
 评估过程：
 评估数据加载过程：见data_loader.py文件_load_data方法代码注释
 随机选取音频文件，进行模型预测：
-    特征提取和数据整形：见speech_features.py中类SpecAugment的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
+    特征提取和数据整形：见speech_features.py中类Spectrogram的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
     模型预测：见keras_backend.py中类SpeechModel251BN的forward方法代码注释【预测数据，待学习】
     计算误差：见ops.py中的get_edit_distance方法代码注释【计算编辑距离，待学习】
     打印或保存误差及错误率信息
@@ -52,7 +52,7 @@ asrt核心逻辑：
 识别过程：
 加载训练好的模型：利用tensorflow中的Model类load_weights方法
 读取输入音频文件：读取单个音频文件
-特征提取和数据整形：见speech_features.py中类SpecAugment的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
+特征提取和数据整形：见speech_features.py中类Spectrogram的run方法代码注释【特征算法处理，待学习】和speech_model.py文件_data_generator方法代码注释
 模型预测：见keras_backend.py中类SpeechModel251BN的forward方法代码注释【预测数据，待学习】
 获取拼音结果：将预测得到的拼音索引依赖拼音列表获取拼音结果
 将拼音翻译为中文：利用N-Gram语言模型将拼音列表翻译为中文，见language_model3.py中的类ModelLanguage的pinyin_to_text方法

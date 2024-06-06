@@ -38,9 +38,9 @@ class SpeechFeatureMeta:
         self.framesamplerate = framesamplerate
 
     def run(self, wavsignal, fs=16000):
-        '''
+        """
         run method
-        '''
+        """
         raise NotImplementedError('[ASRT] `run()` method is not implemented.')
 
 
@@ -120,8 +120,11 @@ class Spectrogram(SpeechFeatureMeta):
         self.x=np.linspace(0, self.window_length - 1, self.window_length, dtype = np.int64)
         self.w = 0.54 - 0.46 * np.cos(2 * np.pi * (self.x) / (self.window_length - 1) ) # 汉明窗
         '''
-
+        # 等差数列 0，1，2，……，399
         self.x = np.linspace(0, 400 - 1, 400, dtype=np.int64)
+        # 汉明窗公式：0.54-0.46*cos(2piX/399)
+        # 汉明窗是一个向量?
+        # 汉明窗的作用?
         self.w = 0.54 - 0.46 * np.cos(2 * np.pi * (self.x) / (400 - 1))  # 汉明窗
         super().__init__(framesamplerate)
 
