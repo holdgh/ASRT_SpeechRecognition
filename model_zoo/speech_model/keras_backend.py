@@ -24,12 +24,10 @@
 """
 
 import tensorflow as tf
-from tensorflow.python.keras.models import Model
-# from tensorflow.keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
-from tensorflow.python.keras.layers import Dense, Dropout, Input, Reshape
-from keras.layers.normalization.batch_normalization import BatchNormalization
-from tensorflow.python.keras.layers import Lambda, Activation, Conv2D, MaxPooling2D
-from tensorflow.python.keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
+from tensorflow.keras.layers import Lambda, Activation,Conv2D, MaxPooling2D
+from tensorflow.keras import backend as K
 import numpy as np
 from utils.ops import ctc_decode_delete_tail_blank
 

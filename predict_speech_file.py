@@ -50,7 +50,12 @@ if __name__ == '__main__':
     ms.load_model('D:\project\AI\ASRT_SpeechRecognition\save_models\\' + sm251bn.get_model_name() + '.model.h5')
     # 获取识别结果
     # res = ms.recognize_speech_from_file('filename.wav')
+    # ['gei3', 'yi3', 'ting3', 'yao4', 'shi4', 'da4', 'jia1', 'hao3', 'wo3', 'shi4', 'lian2', 'tong2', 'shang4', 'hai3', 'qiang2', 'ye4', 'hu4', 'lian2', 'wang3', 'you3', 'xian4', 'gong1', 'xi1', 'de5', 'yuan2', 'gong1', 'wo3', 'jiu4']
+    # 给以挺要誓大家好我是连同上海强业互联网友献工悉的员工我就
     res = ms.recognize_speech_from_file('D:\project\AI\ASRT_SpeechRecognition\data\FormatFactoryPart1.wav')
+    # ['shi2', 'xian4', 'shu4', 'ju4', 'jian1', 'ce4', 'shi4', 'ping2', 'jian1', 'kong4', 'he2', 'gao4', 'yin3', 'shu4', 'ju4', 'de5', 'shi1', 'shi2', 'duan3', 'gui1', 'di4', 'san1', 'ge4', 'shi4', 'jiao4', 'er2', 'yu4', 'chan3', 'pin3', 'ran2', 'yao4', 'fu4', 'ze2', 'dui4']
+    # 实现数据监测试平间空和告引数据的失时短规第三个视觉而与产品然要负责对
+    # res = ms.recognize_speech_from_file('D:\project\AI\ASRT_SpeechRecognition\data\FormatFactoryPart6.wav')
     print('*[提示] 声学模型语音识别结果：\n', res)
 
     ml = ModelLanguage('model_language')

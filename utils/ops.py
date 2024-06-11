@@ -36,8 +36,8 @@ def read_wav_data(filename: str) -> tuple:
     wav = wave.open(filename, "rb")  # 打开一个wav格式的声音文件流
     num_frame = wav.getnframes()  # 获取帧数
     num_channel = wav.getnchannels()  # 获取声道数
-    framerate = wav.getframerate()  # 获取帧速率
-    num_sample_width = wav.getsampwidth()  # 获取实例的比特宽度，即每一帧的字节数
+    framerate = wav.getframerate()  # 获取帧速率 帧率是对帧数随时间变化的一种度量，指的是每秒钟播放多少帧
+    num_sample_width = wav.getsampwidth()  # 获取实例的比特宽度，即每一帧的字节数，一个字节对应8bit，数字范围-255-256；二个字节对应16比特，数字范围-65535-65536
     str_data = wav.readframes(num_frame)  # 读取全部的帧
     wav.close()  # 关闭流
     wave_data = np.fromstring(str_data, dtype=np.short)  # 将声音文件数据转换为数组矩阵形式
