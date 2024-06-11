@@ -129,19 +129,21 @@ class Spectrogram(SpeechFeatureMeta):
         super().__init__(framesamplerate)
 
     def run(self, wavsignal, fs=16000):
-        if fs != 16000:
+        if fs != 16000:# 当前特征提取仅处理采样率为16000的音频信号
             raise ValueError(
                 f"[Error] ASRT currently only supports wav audio files with a sampling rate of 16000 Hz, but this "
                 f"audio is {fs} Hz.")
 
         # wav波形 加时间窗以及时移10ms
         time_window = 25  # 单位ms
+        # 窗长时间为25毫秒，占比1秒为25/1000，采样率乘以该占比得到窗长度【每个窗所包含的元素个数】
         window_length = int(fs / 1000 * time_window)  # 计算窗长度的公式，目前全部为400固定值
 
         wav_arr = np.array(wavsignal)
         # wav_length = len(wavsignal[0])
         # wav_length = wav_arr.shape[1]
-
+        # wavsignal[0]表示取其第一行数据，再进行len运算得到音频信号的列数【16000】
+        # len(wavsignal[0]) / fs * 1000得到音频总时长，单位毫秒
         range0_end = int(len(wavsignal[0]) / fs * 1000 - time_window) // 10 + 1  # 计算循环终止的位置，也就是最终生成的窗数
         data_input = np.zeros((range0_end, window_length // 2), dtype=np.float64)  # 用于存放最终的频率特征数据
         data_line = np.zeros((1, window_length), dtype=np.float64)

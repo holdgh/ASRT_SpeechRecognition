@@ -41,8 +41,10 @@ def read_wav_data(filename: str) -> tuple:
     str_data = wav.readframes(num_frame)  # 读取全部的帧
     wav.close()  # 关闭流
     wave_data = np.fromstring(str_data, dtype=np.short)  # 将声音文件数据转换为数组矩阵形式
+    # numpy矩阵的整形方式：“-1, n”表示固定列数为n，行数为元素个数/n
+    # numpy矩阵是以行优先遍历进行运算
     wave_data.shape = -1, num_channel  # 按照声道数将数组整形，单声道时候是一列数组，双声道时候是两列的矩阵
-    wave_data = wave_data.T  # 将矩阵转置
+    wave_data = wave_data.T  # 将矩阵转置，得到维数为：num_channel，元素个数/num_channel的矩阵，对于单声道而言，就是一个行向量
     return wave_data, framerate, num_channel, num_sample_width
 
 
