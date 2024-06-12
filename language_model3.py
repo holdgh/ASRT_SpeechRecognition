@@ -62,11 +62,16 @@ class ModelLanguage:
         result = list()
         tmp_result_last = list()
         for item_pinyin in list_pinyin:
-            tmp_result = self.pinyin_stream_decode(tmp_result_last, item_pinyin, beam_size)  # 获取当前拼音与其前置翻译结果的序列【已包含了前期结果，因此后续直接用tmp_result赋值给tmp_result_last】
+            tmp_result = self.pinyin_stream_decode(tmp_result_last, item_pinyin,
+                                                   beam_size)  #
+            # 获取当前拼音与其前置翻译结果的序列【已包含了前期结果，因此后续直接用tmp_result赋值给tmp_result_last】
             if len(tmp_result) == 0 and len(tmp_result_last) > 0:
-                result.append(tmp_result_last[0][0])  # 当前拼音无法翻译为汉字时【无法匹配的原因是：当前拼音匹配不到单字或者当前拼音与前期中结果列表中任一结果的最后一个汉字组合的2-gram子序列无法匹配语言模型model2】，取中间结果中最大出现概率的前期翻译结果纳入最终结果列表中
+                result.append(tmp_result_last[0][
+                                  0])  # 当前拼音无法翻译为汉字时【无法匹配的原因是：当前拼音匹配不到单字或者当前拼音与前期中结果列表中任一结果的最后一个汉字组合的2-gram
+                # 子序列无法匹配语言模型model2】，取中间结果中最大出现概率的前期翻译结果纳入最终结果列表中
                 tmp_result = self.pinyin_stream_decode([], item_pinyin, beam_size)  # 当前拼音无法翻译为汉字时，将当前拼音作为首字进行翻译
-                if len(tmp_result) > 0:  # 如果当前拼音作为首字可以翻译成功，则将当前拼音的翻译结果纳入最终结果列表中；如果当前拼音作为首字仍然无法翻译【无法翻译为汉字的原因是：当前拼音匹配不到单字】，则忽略该拼音
+                if len(tmp_result) > 0:  #
+                    # 如果当前拼音作为首字可以翻译成功，则将当前拼音的翻译结果纳入最终结果列表中；如果当前拼音作为首字仍然无法翻译【无法翻译为汉字的原因是：当前拼音匹配不到单字】，则忽略该拼音
                     result.append(tmp_result[0][0])
                 tmp_result = []  # 当前拼音无法翻译为汉字时，重置中间结果为空
             tmp_result_last = tmp_result
@@ -91,16 +96,28 @@ class ModelLanguage:
         # 第一个字做初始处理
         if len(temple_result) == 0:
             lst_result = list()
+            # 计算所有单字频次之和
+            total_count = 0.0
+            for cur_word in cur_words:
+                if cur_word in self.model1:
+                    total_count += float(self.model1[cur_word])
             for word in cur_words:
+                # 没有出现在单字频次字典中的汉字，丢弃
+                if word in self.model1:
+                    # 计算单字出现频率
+                    word_probability = float(self.model1[word]) / total_count
+                    lst_result.append([word, word_probability])
                 # 添加该字到可能的句子列表，设置初始概率为1.0
-                lst_result.append([word, 1.0])
+                # lst_result.append([word, 1.0])
+            lst_result = sorted(lst_result, key=lambda x: x[1], reverse=True)
             return lst_result
 
         # 开始处理已经至少有一个字的中间结果情况【前期中间结果非空的情况】
         new_result = list()
         for sequence in temple_result:
             for cur_word in cur_words:
-                # 得到2-gram的汉字子序列，sequence[0]为汉字列表，sequence[0][-1]为汉字列表的最后一个汉字【当前拼音的前一个拼音对应的中间结果中的汉字，也即当前汉字的前一个汉字】，sequence[1]为汉字列表对应的出现概率
+                # 得到2-gram的汉字子序列，sequence[0]为汉字列表，sequence[0][
+                # -1]为汉字列表的最后一个汉字【当前拼音的前一个拼音对应的中间结果中的汉字，也即当前汉字的前一个汉字】，sequence[1]为汉字列表对应的出现概率
                 tuple2_word = sequence[0][-1] + cur_word
                 if tuple2_word not in self.model2:
                     # 如果2-gram子序列不存在，则更换下一个cur_word
@@ -109,7 +126,8 @@ class ModelLanguage:
                 prob_origin = sequence[1]  # 原始概率
                 count_two_word = float(self.model2[tuple2_word])  # 二字频数
                 count_one_word = float(self.model1[tuple2_word[-2]])  # 【2-gram子序列的倒数第二个字，也即当前字的前一个字】单字频数
-                cur_probility = prob_origin * count_two_word / count_one_word  # 计算当前2-gram子序列的出现概率=（原始概率【当前字之前的序列出现概率】*二字频数）/单子频数
+                cur_probility = prob_origin * count_two_word / count_one_word  #
+                # 计算当前2-gram子序列的出现概率=（原始概率【当前字之前的序列出现概率】*二字频数）/单子频数
                 new_result.append([sequence[0] + cur_word, cur_probility])
         # 对当前结果序列列表按照概率大小，从大到小排序【todo 考虑new_result有没有可能为空的情况，如果为空，就相当于无法连同前期中间结果翻译当前拼音，但当前拼音是有单字匹配的】
         new_result = sorted(new_result, key=lambda x: x[1], reverse=True)

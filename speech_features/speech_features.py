@@ -156,7 +156,7 @@ class Spectrogram(SpeechFeatureMeta):
             p_end = p_start + 400
             # 截取当前加窗的音频时域信号
             data_line = wav_arr[0, p_start:p_end]
-            #
+            # 矩阵点乘
             data_line = data_line * self.w  # 加窗
             # 进行快速傅里叶变换，取绝对值结果【维数不变】
             data_line = np.abs(fft(data_line))
