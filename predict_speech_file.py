@@ -61,6 +61,6 @@ if __name__ == '__main__':
     ml = ModelLanguage('model_language')
     ml.load_model()
     str_pinyin = res
-    # 将拼音转换为文本？同样的读音，对应多个字，如何确定对应哪个字呢？
+    # todo 将拼音转换为文本？同样的读音，对应多个字，如何确定对应哪个字呢？
     res = ml.pinyin_to_text(str_pinyin)
     print('语音识别最终结果：\n', res)

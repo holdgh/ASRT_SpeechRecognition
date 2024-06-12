@@ -27,6 +27,7 @@ import random
 import numpy as np
 from scipy.fftpack import fft
 from .base import mfcc, delta, logfbank
+import matplotlib.pyplot as plt
 
 
 class SpeechFeatureMeta:
@@ -135,7 +136,7 @@ class Spectrogram(SpeechFeatureMeta):
                 f"audio is {fs} Hz.")
 
         # wav波形 加时间窗以及时移10ms
-        time_window = 25  # 单位ms
+        time_window = 25  # 窗长单位ms，一般认为该窗长时间内的语音信号是稳态的
         # 窗长时间为25毫秒，占比1秒为25/1000，采样率乘以该占比得到窗长度【每个窗所包含的元素个数】
         window_length = int(fs / 1000 * time_window)  # 计算窗长度的公式，目前全部为400固定值
 
@@ -144,20 +145,24 @@ class Spectrogram(SpeechFeatureMeta):
         # wav_length = wav_arr.shape[1]
         # wavsignal[0]表示取其第一行数据，再进行len运算得到音频信号的列数【16000】
         # len(wavsignal[0]) / fs * 1000得到音频总时长，单位毫秒
-        range0_end = int(len(wavsignal[0]) / fs * 1000 - time_window) // 10 + 1  # 计算循环终止的位置，也就是最终生成的窗数
+        # 时移10ms，加窗后最后一段音频信号如果时长不足10ms，这里是直接舍弃的，一般最后为静音片段
+        range0_end = int(len(wavsignal[0]) / fs * 1000 - time_window) // 10 + 1  # 计算循环终止的位置，也就是最终生成的窗数，也可以理解为加窗分帧后的帧数
         data_input = np.zeros((range0_end, window_length // 2), dtype=np.float64)  # 用于存放最终的频率特征数据
         data_line = np.zeros((1, window_length), dtype=np.float64)
 
         for i in range(0, range0_end):
+            # 当前加窗的起点和终点，这里的160对应帧移10ms，i表示第几个窗
             p_start = i * 160
             p_end = p_start + 400
-
+            # 截取当前加窗的音频时域信号
             data_line = wav_arr[0, p_start:p_end]
+            #
             data_line = data_line * self.w  # 加窗
+            # 进行快速傅里叶变换，取绝对值结果【维数不变】
             data_line = np.abs(fft(data_line))
-
+            # 收集加窗后频域变换结果
             data_input[i] = data_line[0: window_length // 2]  # 设置为400除以2的值（即200）是取一半数据，因为是对称的
-
+        # todo 对加窗后频域变换结果做缩小处理？
         data_input = np.log(data_input + 1)
         return data_input
 

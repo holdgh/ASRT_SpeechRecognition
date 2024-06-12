@@ -26,6 +26,7 @@ import os
 import time
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 
 from utils.ops import get_edit_distance, read_wav_data
 from utils.config import load_config_file, DEFAULT_CONFIG_FILENAME, load_pinyin_dict

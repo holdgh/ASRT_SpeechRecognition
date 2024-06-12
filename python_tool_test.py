@@ -22,7 +22,22 @@ def deng_cha():
     return np.linspace(0, 400 - 1, 10, dtype=np.int64)
 
 
+def left_foot_into_company(days):
+    """
+    左脚踏入公司被开除
+    """
+    if days < 1:
+        raise Exception("入职天数不合法")
+    total_money = 0
+    for i in range(1, days+1):
+        cur_day_money = 2 ** (i - 1)
+        print("第%d天工资为：%d元" % (i, cur_day_money))
+        total_money = total_money + cur_day_money
+    print("总工资为：%d元" % total_money)
+
+
 if __name__ == "__main__":
     # print(get_random_number(0, 1))
     # print(get_now_time())
-    print(deng_cha())
+    # print(deng_cha())
+    left_foot_into_company(0)
