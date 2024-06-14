@@ -1,0 +1,17 @@
+1、使用pip安装下述工具包：
+pip3 install virtualenv 
+pip3 install virtualenvwrapper # Linux环境使用该命令
+pip3 install virtualenvwrapper-win　　#Windows使用该命令
+
+2、设置系统变量：WORKON_HOME，值为自定义路径，比如D:\py_envs【如果不设置该系统变量，则默认会将虚拟环境维护在系统盘当前用户目录下的Envs目录中】
+
+3、使用命令管理虚拟环境：
+创建虚拟环境 mkvirtualenv test1(虚拟环境名称)
+选择一个python解释器来搭建：mkvirtualenv env --python=python2.7
+查看虚拟环境 lsvirtualenv或者workon
+进入虚拟环境 workon test1(虚拟环境名称)
+退出虚拟环境 deactivate
+删除虚拟环境rmvirtualenv test1(虚拟环境名称)
+查看虚拟环境下的安装包 pip list
+
+4、pycharm集成虚拟环境，设置路径：settings-project:**-python interpreter-add interpreter-add local interpreter-勾选virtualenv environment-选择existing-选择利用mkvirtualenv命令创建的虚拟环境
