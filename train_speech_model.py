@@ -24,7 +24,7 @@
 """
 
 import os
-from tensorflow.keras.optimizers import Adam
+from keras.optimizer_v2.adam import Adam
 
 from speech_model import ModelSpeech
 from model_zoo.speech_model.keras_backend import SpeechModel251BN

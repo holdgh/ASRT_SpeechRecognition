@@ -24,10 +24,10 @@
 """
 
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
-from tensorflow.keras.layers import Lambda, Activation,Conv2D, MaxPooling2D
-from tensorflow.keras import backend as K
+from keras.models import Model
+from keras.layers import Dense, Dropout, Input, Reshape, BatchNormalization
+from keras.layers import Lambda, Activation,Conv2D, MaxPooling2D
+from keras import backend as K
 import numpy as np
 from utils.ops import ctc_decode_delete_tail_blank
 
